@@ -325,15 +325,16 @@ module.Load.Unload <- function(action_type, module_name="", modulecmd_path){
 # Internal function to module list and module avail
 module.List.Avail <- function(action_type, modulecmd_path){
   #modulecmd_path <- is.modules.avail()
-  rstudioEnv <- Sys.getenv("RSTUDIO")
-  if(rstudioEnv==1){
+  #rstudioEnv <- Sys.getenv("RSTUDIO") #Matthias Fastenrath CGTC 
+  #if(rstudioEnv==1){ #Matthias Fastenrath CGTC 
     try(module_vars <- system2(modulecmd_path, paste("bash", action_type, "-t"), stdout=TRUE, stderr=TRUE))
-  } else {
-    try(module_vars <- system2("module", action_type, stdout=TRUE, stderr=TRUE))
+  #} else { #Matthias Fastenrath CGTC 
+  #  try(module_vars <- system2("module", action_type, stdout=TRUE, stderr=TRUE)) # #Matthias Fastenrath CGTC This command does not work on our AWS instances.
+  #The command above that was previously used only for rstudioEnv does work though.
     # if(length(module_vars) == 0){
     #   try(module_vars <- system2("module", paste(action_type,'-t'), stdout=TRUE, stderr=TRUE))
     # } 
-  }
+  #}
   # Return only the module names
   module <- as.character()
   module_vars <- gsub(".*:|\\(.*?\\)", "", module_vars) ## remove "Currently Loaded Modulefiles:" and "(default)"
