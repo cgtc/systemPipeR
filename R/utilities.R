@@ -361,6 +361,7 @@ clusterRun <- function(args, FUN = runCommandline, more.args = list(args = args,
   f <- function(i, args, ...) FUN(args = args[i], ...)
   logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
+  system(paste('chmod -R 777', file.path(logdir1))) #Matthias Fastenrath CGTC have added this line to make sure that the Master and Compute nodes can write access to the folder
   ids <- batchMap(fun = f, args.f, more.args = more.args, reg = reg)
   chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
   ids$chunk <- chunk
