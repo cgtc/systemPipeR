@@ -1,0 +1,613 @@
+changelog
+    version 2.1.7
+        - R code can be submitted to compute node - internal function
+        
+    version 2.1.6
+        - Allows targets subset with runWF 
+        - Improved running time when targets subset
+
+    version 2.1.5
+        - runWF remote option added
+        
+    version 2.1.4
+        - runInfo Replacement method update
+        
+    version 2.1.3
+        - yamlinput methods update
+        
+    version 2.1.2
+        - preprocessReads updates
+        
+    version 2.1.1
+        - runCommandline function: 
+            - Fixed status/file.exists dataframe;
+            - input_targets improved.
+        - runWF function: run_step, ignore.dep and targets arguments added.
+        
+    version 1.99.32
+        - Updated importWF, sal2bash and sal2rmd functions
+        - Updated plotWF function
+
+    version 1.99.31
+        - Updated renderReport function
+
+    version 1.99.30
+        - allowing multiple steps dependency == NA
+        - Fixed replaceStep
+
+    version 1.99.29
+        - cwlFilesUpdate function 
+
+    version 1.99.28
+        - Update package version
+
+    version 1.27.27
+        - After SPRproject(resume=TRUE), spr_importing option
+
+    version 1.27.26
+        - accepting 'input.results.path' to cwl description file
+
+    version 1.27.24/1.27.25
+        - Dependencies and global variables fixed
+
+    version 1.27.23
+        - Added new method: updateStatus<-
+        - Added new slot to LineWise Class - runInfo
+        - Added new arguments to LineWise function: 
+            - run_step
+            - run_session
+        - Updated write_SYSargsList and read_SYSargsList
+        - Removed LineWise slot: rmdPath. Info can be found on the files slot or still using the method 
+        - Added random numbers to log files names + collect each R code steps logs
+
+    version 1.27.22
+        - slot runInfo updated
+        - Updates Documentation
+        - Minor fixes
+
+    version 1.27.20/21
+        - Updates Documentation
+        - Minor fixes
+        
+    version 1.27.18/19
+        - Updates Documentation
+        - Minor fixes: infile1/infile2, alignStats
+        - exporting write_SYSargsList
+    
+    version 1.27.17
+        - Updates Documentation
+        - Minor fixes
+    
+    version 1.27.16
+        - Exported "sal2rmd" and "sal2bash"
+    
+    version 1.27.15
+        - Updates Documentation
+        - Minor fixes
+    
+    version 1.27.14
+        - clusterRun()
+    
+    version 1.27.12
+        - plotWF accepts empty sal + minor updates
+        - alias tryCMD
+    
+    version 1.27.12
+        - plotWF accepts empty sal + minor updates
+       - alias tryCMD
+        - New argument createParam (confirm=FALSE)
+        - sal object with relative Paths
+        - Improvements SPRproject: resume and restart
+        - Bugs: runCommandLine and tryCMD
+        - Bugs fixed: replaceSteps<- + improvements
+        - Bug fixed: dependency in LineWise and SYSargsList functions
+        - Documentation
+        - Removed requirement of SampleName for loadWF
+        - Internal functions: .checkSpecialChar; .cbindTargetsOutfiles; .checkInputVars
+
+     version 1.27.11
+        - Deprecated: getQsubargs and qsubRun functions
+        - LineWise: help files and files organization
+        - SYSargs2: help files and files organization
+        - SYSargsList: help files and files organization
+        - AllClasses and AllGenerics exclusive files
+        
+     version 1.27.10
+        - plotWF() --> New design 
+        - Forcing dependency argument
+        - outfiles double check: the original location + New location in cases of dir=TRUE
+        - Forcing 'targetsWF' and 'outfiles' columns names need to be unique
+        - New method: updateColumn()
+        - Updated varseq functions
+        - importWF() and LineWise() improved
+        - alignStats() improved
+        - LineWise status Success --> skip
+        - Documentation
+        
+     version 1.27.9
+        - Renamed subsetOutfiles() to getColumn()
+        - Added internal slot for SYSargs2 'internal_outfiles' -> This allows to keep the original output paths, important for the internal updates within runCommandline()
+        - Internal validation for adding a new step improved 
+        - importWF() improved
+        - Force option for runCommandline() improved
+        - Documentation
+        
+     version 1.27.8
+        - Added viewEnvir() and copyEnvir(), stepName(), subsetOutfiles() methods
+        - targetsheader(), SampleName() methods for SYSargsList 
+        - SampleName() methods for SYSargs2
+        - Improved subsetTargets() methods
+        - Steps names needs to be unique.
+        - Added output names at files slot at SYSargs2 obj
+        - outfiles(sal) --> colnames from cwl file
+        - progress bar for LineWise
+        - runCommandline --> removed sample subfolder structure
+        
+     version 1.27.7
+         - Added option to dir=T/F for each step
+         - Fixed bugs to save and restart SYSargsList object
+         - Added colors to status show method
+        
+     version 1.27.6
+         - SYSargs2 updates:
+             - status(): New Method and slot
+             - Update show Method
+         - SYSargsList updates: 
+             - Rename slot projectInfo
+             - runInfo(): New slot and Method
+             - Removed sprconfig method/slot
+             - Update statusWF() printing and replacement methods
+             - show() method: more details
+             - New methods: viewEnvir and copyEnvir
+         - LineWise Upadates:
+             - New slot/methods: status()
+        - Update SPRproject, write_SYSargsList, read_SYSargsList, SYSargsList, runWF, renderReport, renderLogs, SYScreate functions
+        - Major improvement in RunCommandline function
+
+     version 1.27.5
+         - check.output for SYSargsList
+         - New Fct: cmdTool2wf
+         - New Methods: subsetTargets; 
+         - Improve SYSargsList Methods
+         - SPRproject function (new internal design)
+         - `+` method
+         - LineWise Class and Methods
+         - CWL templates path 
+         - New unit tests
+         - Vignettes
+         
+     version 1.27.4
+         - R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
+     version 1.27.3
+         - Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF", "SYSargsList" functions
+         - Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectInfo", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
+         - Updating SYSargs2 and SYSargsList class
+        - Updating "loadWorkflow", "createWF", "output_update", "write.clt", "write.yml", "SYScreate", "runWF", "initWF"  functions
+        - Adding systemPipeR_CWL.Rmd vignette
+        
+     version 1.27.2
+         - Special case for Rscript
+         
+     version 1.27.1
+         - Added unittest 
+                  
+     version 1.25.17
+         - Fixed bug: 'symLink2bam()'
+                  
+     version 1.25.16
+         - `module()` bug fix for RStudio Server
+         - `plotfeaturetypeCounts()` and `plotfeaturetypeCounts()` --> `scale_x_discrete`
+                  
+     version 1.25.14
+        - Clean message from `runCommandline()`
+        - Fixed bug on `initWF()`
+        - Updated Vignette
+        - Printing message for `createWF()`
+        - upgrade `runWF()`
+                  
+     version 1.25.13
+         - Fixed `GO.db` dependency
+         
+     version 1.25.12
+         - Fixed .Rbuildignore
+         
+     version 1.25.11
+         - Added "cwl/*" files:
+        - BUSCO/*
+        - blast/*
+        - bowtie2/bowtie2-mi/*
+        - bwa/bwa-aln/*
+        - bwa/bwa-mem-pe/*
+        - bwa/bwa-mem-se/*
+        - bwa/bwa-samse/*
+        - cutadapt/*
+        - fastqc/*
+        - fastx_toolkit/*
+        - gunzip/*
+        - kallisto/*
+        - picard/*
+        - star/*
+        - workflow-bwa-aln/*
+
+     version 1.25.10
+        - `moduleload` updated help file
+        - Added `check.output` function
+        - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
+        - `tryCL` deals with `fastqc` commandline test
+        - Added `lfcShrink` option to `run_DESeq2` function
+        - Allow `alignStats` fct accepts different `subset="FileName1"` from targets
+        
+     version 1.25.9
+        - Added print behavior to `write.cwl` and `write.yml`
+        - Fixed bug `genFeatures()`
+        - Vignette update
+        
+     version 1.25.8
+        - Reducing package dependency
+        - Reducing 'Undefined global functions or variables'
+        
+     version 1.25.7
+        - Updated URL
+        - Organized functions files: "SYSargsList and SYSargs2" classes --> R/AllClasses2.R
+        - Removed 'SYSargs2Pipe-class'
+        
+     version 1.25.6
+        - Function wrapper showDT(DT::datatable)
+        - Fixed bug: 'symLink2bam()'
+        - Vignette update
+        
+     version 1.25.5
+        - Updating 'renderWF' and 'config.param' functions
+        
+     version 1.25.4
+        - Help file update in 'creadWF.Rd'
+        
+     version 1.25.3
+        - Adding new Methods: 'addAssay' and 'addMetadata': Extension accessor for SummarizedExperiment object 
+        - Adding New function: 'SPRdata()'
+        
+     version 1.25.2
+        - NAMESPACE
+        
+     version 1.25.1
+        - Version bump
+        
+     version 1.23.9
+        - Vignette update
+        
+     version 1.23.8
+        - Converting myEnvModules S3 class to S4 class
+        - Adding new Methods: "available_modules", "loaded_modules", "default_modules", "modulecmd"
+        
+     version 1.23.7
+        - Fixing: "warning in read.delim(... comment = "#"): partial argument match of 'comment' to 'comment.char'"
+        
+     version 1.23.6
+        - Importing selectively functions from the `grid` package. Avoiding conflict with `Biostrings` package: "replacing previous import 'Biostrings::pattern' by 'grid::pattern'"
+        
+     version 1.23.5
+        - Warning fixed: [yaml::read_yaml(eval.expr=TRUE)] more details here: https://github.com/viking/r-yaml/issues/47
+        
+     version 1.23.4
+        - Fixed bug: '.makeBam'
+        
+     version 1.23.3
+        - moduleload function BugFix: [IIGB_MODULES >> HPCC_MODULES]
+        
+     version 1.23.2
+        - Added 'importFrom("IRanges", "IRanges")'
+        
+     version 1.23.1
+        - Vignette update
+        
+     version 1.21.13
+        - Adding 'runWF' and 'renderReport' functions
+        - Adding new internal fct: '.tryCatchSYS'
+        
+     version 1.21.12
+        - Adding 'plotWF' and 'dataWF' method
+        - Adding new internal fct: '.find_long_branch', '.make_plot', '.change_branch' 
+
+     version 1.21.11
+        - Adding 'magrittr' ImportsFrom
+        
+     version 1.21.10
+        - Adding new CLASS: "SYSargsList"
+        - Adding new Methods: "codeSteps", "projectInfo", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
+        - Adding New functions:[config.param, configWF, initProject, initWF, subsetRmd, SYSprojec]
+        - Updating: "SYScreate"
+        - Adding new internal functions: ".getPath ", ".getExt ", ".getFileName", ".nest", ".replace", ".sysconfigCheck", ".parse_step"
+
+     version 1.21.9
+        - Adding new utilities functions: "evalCode", "tryPath", "tryCL"
+
+     version 1.21.08
+        - Implementing deprecated for 'SYSargs2Pipe-class'; it will be replaced for 'SYSargsList'
+        
+     version 1.21.07
+        - Replace name SYSargs2list methods to sysargs2 methods [Motivation: because we are introducing a new class called SYSargsList, to avoid any confusion]
+        - BugFix: citation file
+        - Updated News file
+        
+     version 1.21.06
+        - Fixed bug: 'runCommandline'
+        - Internal functions for runCommandline(): modular and sustainable develp
+        - Fixed output_update()
+        
+     version 1.21.05
+        - Fixed bug: 'renderWF': New R version bugs
+        
+     version 1.21.04
+        - Fixed bug: 'runCommandline' modulecmd
+        
+     version 1.21.03
+        - Fixed bug: 'mergeBamByFactor' accepting "FileName" column in any position
+        
+     version 1.21.02
+        - Fixed bug: run_edgeR/run_DESeq2 fct
+            - fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
+        
+     version 1.19.07
+        - Added "cwl/*" files:
+            - GATK/*
+            - bcftools/*
+            - varseq/*
+        - BugFix: 'runCommandline' and 'writeTargetsout'
+        - Updated functions related with VAR-seq workflow
+            - variantReport 
+            - combineVarReports
+            - varSummary
+            - filterVars
+        - BugFix 'writeTargetsout' function (adding new columns - step)
+        
+     version 1.19.06
+        - Updated vignette
+        - Updated functions
+        - alignStats
+        - symLink2bam
+        - subsetWF
+        - Updated functions related with Chip-seq workflow
+            - countRangeset
+            - mergeBamByFactor
+            - readComp
+            - runDiff
+        - Added "cwl/*" files:
+            - MACS2/*
+            - annotate_peaks/*
+            - count_rangesets/*
+            - mergeBamByFactor/*
+            - rundiff/*
+
+     version 1.19.05
+        - **Central vignette for all the Workflows**
+        - Updated 'runCommandline':
+            - accepts bash command and "$TRINITY"
+            - force argument
+            - del_sam argument
+            - Bugfix "make_bam" and dir=T: "update_output"
+        - 'loadWF' function accepts 'targets.txt' OR 'targets.yml' OR 'SYSargs2' object OR NULL  
+        - Updated 'writeTargetsout' function (adding new columns)
+
+     version 1.19.04
+        - Moved functions from R/AllClasses.R to R/utilities.R
+        - Added new function: "olRanges" - R/chipseq.R
+        - Added new function: "createWF" + Unexported helper functions: "SYScreate", "write.clt", "write.yml"
+        - Added wrapper for loadWorkflow function: Short and consistent name for the function "loadWF"
+
+     version 1.19.03
+        - Added "cwl/*" files:
+            - hista2/*
+            - tophat2/*
+            - bowtie2/*
+            - bwa/*        
+            - rsubread/* 
+            - gsnap/* 
+            - preprocessReads/* 
+            - trim_galore/* 
+            - trimmomatic/* 
+            - samtools/* 
+            - WF_Hisat2_samtools/* 
+        - Added "docopt.R/*" folder
+        - SYSargs2:
+            - Updated *output_update.Rd and *preprocessReads.Rd
+            - Removed special cases (`mkdir`)
+            - Updated 'subsetWF' function
+            - Updated 'output_update' function and help file
+            - SYSargs2 accepting many outputs file under one 'cmdlist(WF)'
+            - Bugfix in 'pathInstance' fct: removed NULL from the path
+            - Bugfix in 'loadWorkflow' fct: it accepts "targets.txt" and "./targets.txt"
+        - Updated 'runCommandline' function: 
+            - accepting many outputs file under one cmdlist(WF); 
+            - handle with BWA specials stderr; 
+            - creates an index in cases of .bam files (ex. Tophat2); 
+            - automatically create SYSargs2 object with output_update in cases of make_bam=TRUE and/or dir=TRUE; 
+            - fix "dir=TRUE"
+        - Updated 'writeTargetsout' function (Allowing SYSargs2 object)
+        - Updated 'preprocessReads' function and help file
+        - Updated all the help files related with SYSargs2
+        - Updated vignettes
+            
+     version 1.19.02
+        - Added SYSargs2 to the main vignette
+ 
+     version 1.19.01
+        - Fixed bug in runCommandline function - make_bam=TRUE
+ 
+     version 1.17.11
+        - Fixed bug in loadWorkflow function - class==Workflow
+        - Added 'more.args' to clusterRun function (Updated help file)
+ 
+     version 1.17.10
+        - Updated links in vignettes
+
+     version 1.17.9
+        - Support Rstudio Server moduleload in runCommandline
+
+     version 1.17.8
+        - Fixed typo in "subsetWF" and "writeTargetsout" functions
+
+     version 1.17.7
+        - Added SYSargs2 and SYSargs2Pipe classes and Methods
+        - Added "loadWorkflow", "renderWF", "subsetWF", "output_update", "targets.as.df" functions
+        - Added respective help files for all functions and classes above
+        - Added folder inst/extdata/cwl/*
+        - Updated alignStats, clusterRun, runCommandline, and writeTargetsout functions and the corresponding help files (Allowing SYSargs2 object)
+        - Transferred "inst/extdata/slides" and "inst/extdata/ignette_archive/" to systemPipeRdata package
+        - Workflows templates - size reduced. Full version in systemPipeRdata package
+        - Unused figures removed 
+
+     version 1.17.6
+        - Small bug fix in overLapper function 
+
+     version 1.17.5
+        - Updated clusterRun function by recent batchtools package
+        - Updated help files related to clusterRun function examples
+        - Update runCommanline function to handle the stop in the module function (system with no Environment Modules)
+        - New templates to SGE, Slurm and Torque clusters
+
+     version 1.17.4
+        - Bugfix in vignettes (systemPipeRNAseq, systemPipeVARseq, and systemPipeChIPseq)
+
+     version 1.17.3
+        - Switched all vignettes to R markdown (*.Rmd) followed by small updates
+
+     version 1.17.2
+        - Added "ImmunoOncology" to biocViews in Description File
+    
+    version 1.17.1
+        - Improved vignette instructions
+    
+    version 1.15.3
+        - Fixed typo in vignette
+
+    version 1.15.1
+        - Updated description file 
+    
+    version 1.11.3
+        - Fixed duplicated commits 
+        - Adopted to new default setting of maxgap in findOverlaps
+        - Minor formatting improvements
+    
+    version 1.11.2
+        - Support for passing on several environmental variables in moduleload
+    
+    version 1.11.1
+        - Fixed gene set naming problem in GOCluster_Report
+
+    version 1.9.2
+        - Added make_bam argument to runCommandline
+    
+    version 1.7.0 - 1.9.1
+        - vignette updates
+
+    version 1.5.8 - 1.5.9
+        - bugfix in seeFastqPlot caused by recent change in ggplot2
+        - fix in fstats component of seeFastq
+
+    version 1.5.6 - 1.5.7
+        - vignette updates
+
+    version 1.5.5
+        - fixed extendylim in plotfeatureCoverage()
+        - fixed error in featureCoverage when txdb/grl was created from gff with scaffolds not containing any genes
+
+    version 1.5.0 - 1.5.4
+        - doc updates
+        - git mirror setup
+        - fixed genFeatures for txdb instance from makeTxDbFromUCSC()
+        - fixed genFeatures for empty range sets
+
+    version 1.3.44 - 1.3.50
+        - added predORF
+        - added scaleRanges
+        - optimized performance of scaleRanges
+        - vignette updates
+        - translational efficiency modeling with DESeq2
+
+    version 1.3.35 - 1.3.43
+        - added featureCoverage and plotfeatureCoverage
+        - vignette updates
+    
+    version 1.3.31 - 1.3.35
+        - added Ribo-Seq function: genFeature
+        - added Ribo-Seq functions: featuretypeCounts and plotfeaturetypeCounts
+        
+    version 1.3.23 - 1.3.30
+        - vignette updates
+        - updated ChIP-Seq workflow
+    
+    version 1.3.21 - 1.3.22
+        - added writeTargetsRef and mergeBamByFactor
+    
+    version 1.3.17 - 1.3.10
+        - Converted main vignette to R Markdown
+        - Instructions to download sample data via systemPipeRdata
+        - Fix for missing systemPipeRdata on build system
+        - Fix to get correct name of HTML page on Bioc page
+
+    version 1.3.16
+        - Fixed minor bug in runCommandline
+
+    version 1.3.14 - 1.3.15
+        - Fixed PE support in preprocessReads
+    
+    version 1.3.13
+        - Included gsnap and VariantTools examples in vignette
+    
+    version 1.3.8 - 1.3.12
+        - vignette updates 
+    
+    version 1.3.7
+        - added sample Makefile 
+    
+    version 1.3.4 - 1.3.6
+        - vignette updates 
+    
+    version 1.3.3
+        - updated readComp 
+        - corrected typo for systemArgs when NULL is assigned to sysma
+    
+    version 1.3.2
+        - fixed path to BatchJob's log file location when symbolic links are used
+    
+    version 1.1.16
+        - added functions for variant filtering and annotation
+    
+    version 1.1.15
+        - support for GATK and BCFtools
+    
+    version 1.1.12-1.1.14
+        - vignette/man updates
+    
+    version 1.1.11
+        - added DESeq2 support
+    
+    version 1.1.9-1.1.10
+        - vignette/man updates
+    
+    version 1.1.8
+        - added preprocessReads function
+    
+    version 1.1.7
+        - support for R-based software generating input/output files
+        - support for pipelines with several system command steps
+    
+    version 1.1.6
+        - added new *.param files
+    
+    version 1.1.5
+        - vignette updates
+    
+    version 1.1.4
+        - updated vennPlot
+
+    version 1.1.3
+        - added functions: overLapper, vennPlot and olBarplot
+        - eliminated warning in seeFastq
+    
+    version 1.1.2
+        - documentation update
+
+    version 0.99.0 - 1.1.1
+        - initial version on Bioconductor
+

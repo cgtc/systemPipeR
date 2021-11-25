@@ -8,7 +8,7 @@ Updates the output files paths in the \code{SYSargs2} object
 After executing all the command-lines by the \code{runCommadline} function, the output files can be created in specific directories rather then \code{results} in a particular directory. Also, the \code{runCommadline} function allows converting the SAM file outputs to sorted and indexed BAM files. Thus, the \code{output_update} function allows updating the location of these files in the output of the \code{SYSargs2}  object.
 }
 \usage{
-output_update(args, dir = FALSE, dir.name = NULL, replace = FALSE, extension = NULL, make_bam=FALSE)
+output_update(args, dir = FALSE, dir.name = NULL, replace = FALSE, extension = NULL, make_bam=FALSE, del_sam=TRUE)
 }
 \arguments{
   \item{args}{
@@ -29,6 +29,9 @@ output_update(args, dir = FALSE, dir.name = NULL, replace = FALSE, extension = N
   \item{make_bam}{
 	Auto detects SAM file outputs and update them on the \code{SYSargs2} object for sorted and indexed BAM files. Default is \code{make_bam=FALSE}. This argument should be used in integration with \code{runCommandline} function. 
 }
+  \item{del_sam}{
+	This option allows deleting the SAM files created when the \code{make_BAM} converts the SAM files to sorted and indexed BAM files. Default is \code{del_sam=TRUE}.
+}
 }
 \value{
 \code{SYSargs2} object with output location files updated.
@@ -42,9 +45,9 @@ To check directory name in the \code{input} file: \code{yamlinput(WF)$results_pa
 \examples{ 
 ## Construct SYSargs2 object from CWl param, CWL input, and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
-                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
 output(WF)

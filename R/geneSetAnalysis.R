@@ -61,8 +61,8 @@ setMethod(
 ## custom mappings can be used here, but need to have the same format as GO_XX_DFs in the following examples
 ## (A.1.1) Obtain mappings from geneontology.org
 .readGOorg <- function(myfile, colno, org) {
-  ## global functions or variables
-  GOTERM <- NULL
+  pkg <- c("AnnotationDbi", "GO.db")
+  checkPkg(pkg, quietly = FALSE)
   go_org <- read.delim(myfile, na.strings = "", header = FALSE, comment.char = "!", sep = "\t")
   go_org <- go_org[, colno]
   names(go_org) <- c("GOID", "GeneID", "GOCAT")
@@ -83,7 +83,7 @@ setMethod(
   GO_BP_DF <- go_org[go_org[, 3] == "P", ]
   GO_CC_DF <- go_org[go_org[, 3] == "C", ]
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
-  go_df <- data.frame(GOID = names(Term(GOTERM)), Term = Term(GOTERM), Ont = Ontology(GOTERM))
+  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
   go_df <- na.omit(go_df)
   ## Return results
   dflist <- list(D_BP = GO_BP_DF, D_CC = GO_CC_DF, D_MF = GO_MF_DF, GO_DF = go_df)
@@ -94,18 +94,18 @@ setMethod(
 
 ## (A.1.2) Obtain mappings from BioC
 .sampleDFgene2GO <- function(lib) {
-  ## global functions or variables
-  GOTERM <- getOntology <- NULL
+  pkg <- c("GO.db", "annotate", "AnnotationDbi")
+  #checkPkg(pkg, quietly = FALSE)
   require(lib, character.only = TRUE)
   mylibbase <- gsub(".db", "", lib)
-  GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "MF") # generates list with GeneID components containing MFGOs
+  GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
   GO_MF_DF <- data.frame(GOID = unlist(GOMF), GeneID = rep(names(GOMF), as.vector(sapply(GOMF, length))), Count = rep(as.vector(sapply(GOMF, length)), as.vector(sapply(GOMF, length))))
-  GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "BP") # generates list with GeneID components containing BPGOs
+  GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
   GO_BP_DF <- data.frame(GOID = unlist(GOBP), GeneID = rep(names(GOBP), as.vector(sapply(GOBP, length))), Count = rep(as.vector(sapply(GOBP, length)), as.vector(sapply(GOBP, length))))
-  GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "CC") # generates list with GeneID components containing CCGOs
+  GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
   GO_CC_DF <- data.frame(GOID = unlist(GOCC), GeneID = rep(names(GOCC), as.vector(sapply(GOCC, length))), Count = rep(as.vector(sapply(GOCC, length)), as.vector(sapply(GOCC, length))))
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
-  go_df <- data.frame(GOID = names(Term(GOTERM)), Term = Term(GOTERM), Ont = Ontology(GOTERM))
+  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
   go_df <- na.omit(go_df)
   ## Return results
   dflist <- list(D_BP = GO_BP_DF, D_CC = GO_CC_DF, D_MF = GO_MF_DF, GO_DF = go_df)
@@ -117,8 +117,6 @@ setMethod(
 ## (A.2) Generate list containing gene-to-GO-OFFSPRING associations including assiged nodes
 ## This is slow (3 minutes), but needs to be done only once!
 .gene2GOlist <- function(catdf, rootUK = FALSE) { # If the argument 'rootUK' is set to TRUE then the root nodes are treated as terminal nodes to account for the new unknown terms
-  ## global functions or variables
-  GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
   ## Import required data frames
   GO_MF_DF <- catdf$D_MF
   GO_BP_DF <- catdf$D_BP
@@ -126,13 +124,13 @@ setMethod(
   ## Populate each GO node with associated gene ids
   for (i in c("MF", "BP", "CC")) {
     if (i == "MF") {
-      go_offspr_list <- as.list(GOMFOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOMFOFFSPRING)
     }
     if (i == "BP") {
-      go_offspr_list <- as.list(GOBPOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOBPOFFSPRING)
     }
     if (i == "CC") {
-      go_offspr_list <- as.list(GOCCOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOCCOFFSPRING)
     }
     go_offspr_list <- lapply(go_offspr_list, unlist)
     go_offspr_list <- lapply(go_offspr_list, as.vector) # clean-up step for the list
@@ -321,7 +319,7 @@ GOHyperGAll <- function(catdb, gocat = "MF", sample, Nannot = 2) {
 ## (C.1) Define subsetting function
 GOHyperGAll_Subset <- function(catdb, GOHyperGAll_result, sample = test_sample, type = "goSlim", myslimv) { # type: "goSlim" or "assigned"; optional argument "myslimv" to privde custom goSlim vector
   ## global functions or variables
-  test_sample <- GO_CC_DF <- NULL
+  test_sample <- NULL
   if (type == "goSlim") {
     if (missing(myslimv)) {
       slimv <- c("GO:0003674", "GO:0008150", "GO:0005575", "GO:0030246", "GO:0008289", "GO:0003676", "GO:0000166", "GO:0019825", "GO:0005515", "GO:0003824", "GO:0030234", "GO:0003774", "GO:0004871", "GO:0005198", "GO:0030528", "GO:0045182", "GO:0005215", "GO:0006519", "GO:0007154", "GO:0016043", "GO:0006412", "GO:0006464", "GO:0006810", "GO:0007275", "GO:0007049", "GO:0005975", "GO:0006629", "GO:0006139", "GO:0019748", "GO:0015979", "GO:0005618", "GO:0005829", "GO:0005783", "GO:0005768", "GO:0005794", "GO:0005739", "GO:0005777", "GO:0009536", "GO:0005840", "GO:0005773", "GO:0005764", "GO:0005856", "GO:0005634", "GO:0005886", "GO:0005576") # contains new unknown terms: "GO:0003674", "GO:0008150", "GO:0005575"
@@ -335,7 +333,7 @@ GOHyperGAll_Subset <- function(catdb, GOHyperGAll_result, sample = test_sample, 
     ## Import required data frames
     GO_MF_DF <- catmap(catdb)$D_MF
     GO_BP_DF <- catmap(catdb)$D_BP
-    # GO_CC_DF <- catmap(catdb)$D_CC
+    GO_CC_DF <- catmap(catdb)$D_CC
     termGO <- c(
       as.vector(GO_MF_DF[GO_MF_DF$GeneID %in% sample, 1]),
       as.vector(GO_BP_DF[GO_BP_DF$GeneID %in% sample, 1]),
@@ -364,33 +362,31 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat = "MF", cutoff = 0.00
   if (gocat != as.vector(GOHyperGAll_result$Ont[!is.na(GOHyperGAll_result$Ont)])[1]) {
     stop("The GO categories in GOHyperGAll_Simplify() and GOHyperGAll_result need to match")
   }
-  ## global functions or variables
-  GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
+  checkPkg("GO.db", quietly = FALSE)
   testDF <- GOHyperGAll_result[GOHyperGAll_result$Padj <= cutoff, ]
   testDF <- data.frame(testDF, test = rep(0, times = length(testDF[, 1])))
   testDF <- testDF[!is.na(testDF$Ont), ]
-  GOIDv <- NULL
-  GO_OL_Matchv <- NULL
+  GO_OL_Matchv <- GOIDv <- NULL
   while (sum(testDF$test == 0) > 0) {
     clusterv <- NULL
     test <- as.vector(testDF[, 1])
     for (j in 1:length(test)) {
       if (gocat == "MF") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOMFOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOMFOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOMFOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOMFOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOMFOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOMFOFFSPRING)[[test[j]]])
         }
       }
       if (gocat == "BP") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOBPOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOBPOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOBPOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOBPOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOBPOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOBPOFFSPRING)[[test[j]]])
         }
       }
       if (gocat == "CC") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOCCOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOCCOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOCCOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOCCOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOCCOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOCCOFFSPRING)[[test[j]]])
         }
       }
       clusterv <- c(clusterv, mymatch)
@@ -545,7 +541,7 @@ GOCluster_Report <- function(catdb, setlist, id_type = "affy", method = "all", C
 ######################
 goBarplot <- function(GOBatchResult, gocat) {
   ## global functions or variables
-  SampleMatch <- Sample <- NULL
+  SampleMatch <- Sample <- Term <- NULL
   x <- GOBatchResult
   x <- x[, c("SampleMatch", "Term", "CLID", "Ont")]
   x <- x[x$Ont == gocat, 1:3]
@@ -555,14 +551,14 @@ goBarplot <- function(GOBatchResult, gocat) {
   x[, "Term"] <- term
   ontnames <- c(CC = "Cellular Component", BP = "Biological Process", MF = "Molecular Function")
   x[, 2] <- factor(x[, 2], levels = unique(x[, 2]), ordered = TRUE) # Defines plotting order of bars!!!
-  p <- ggplot(x, aes(Term, SampleMatch, fill = Sample)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    coord_flip() +
-    theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
-    xlab("GO Term") +
-    ylab("Gene Count") +
-    ylim(0, max(x$SampleMatch)) +
-    ggtitle(ontnames[gocat])
+  p <- ggplot2::ggplot(x, ggplot2::aes(Term, SampleMatch, fill = Sample)) +
+    ggplot2::geom_bar(position = "dodge", stat = "identity") +
+    ggplot2::coord_flip() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 0, hjust = 1)) +
+    ggplot2::xlab("GO Term") +
+    ggplot2::ylab("Gene Count") +
+    ggplot2::ylim(0, max(x$SampleMatch)) +
+    ggplot2::ggtitle(ontnames[gocat])
   print(p)
 }
 ## Usage:

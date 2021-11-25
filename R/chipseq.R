@@ -73,9 +73,9 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
   } else if (class(args) == "SYSargs2"){
     out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = F)
     for(i in seq_along(out)){
-      names(out[[i]]) <- cwlfiles(args)$step
+      names(out[[i]]) <- files(args)$step
     }
-    # out <- sapply(names(out), function(x) names(out[[x]]) <- cwlfiles(args)$step, simplify = F)
+    # out <- sapply(names(out), function(x) names(out[[x]]) <- files(args)$step, simplify = F)
     sys2list <- list(targets=targets(args_sub),  
                      targetsheader=targetsheader(args_sub),
                      modules=as.list(modules(args_sub)),
@@ -85,8 +85,11 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                      cmdlist=cmdlist(args_sub),
                      input=input(args_sub),
                      output=out,
-                     cwlfiles=cwlfiles(args_sub), 
-                     inputvars=inputvars(args_sub)) 
+                     files=files(args_sub), 
+                     inputvars=inputvars(args_sub), 
+                     cmdToCwl=list(), 
+                     status = data.frame(),
+                     internal_outfiles=list()) 
     args_sub_out <- as(sys2list, "SYSargs2")
   }
   return(args_sub_out)
@@ -107,20 +110,20 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
   if(!c("SampleReference") %in% colnames(targets)) stop("Targets file lacks SampleReference column")
   if(!c("FileName") %in% colnames(targets)) stop("Targets file lacks FileName column")
   if(all(c("FileName1", "FileName2") %in% colnames(targets))) stop("Targets file is expected to have only one FileName column")
-  if(file.exists(outfile) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", outfile, "or set 'overwrite=TRUE'")) 
-  testv <- as.character(targets$SampleReference); testv <- testv[!is.na(testv)]; testv <- testv[testv!=""] 
+  if(file.exists(outfile) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", outfile, "or set 'overwrite=TRUE'"))
+  testv <- as.character(targets$SampleReference); testv <- testv[!is.na(testv)]; testv <- testv[testv!=""]
   myfiles <- as.character(targets$FileName); names(myfiles) <- as.character(targets$SampleName)
   if(!all(testv %in% names(myfiles))) stop(paste("Value(s)", paste(testv[!testv %in% names(myfiles)], collapse=", "), "from SampleReference column have no matches in SampleName column!"))
   ## Rearrange targets file
-  targets <- data.frame(FileName1=targets$FileName, FileName2=NA, targets[,2:length(targets[1,])])
+  targets <- data.frame(FileName1=targets$FileName, FileName2=NA, targets)
   targets[,"FileName2"] <- myfiles[as.character(targets$SampleReference)]
-  targets <- targets[!is.na(as.character(targets$SampleReference)), , drop=FALSE] 
-  targets <- targets[targets$SampleReference!="", , drop=FALSE] 
+  targets <- targets[!is.na(as.character(targets$SampleReference)), , drop=FALSE]
+  targets <- targets[targets$SampleReference!="", , drop=FALSE]
   ## Export targets file including header lines
   headerlines <- headerlines[grepl("^#", headerlines)]
   targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
   writeLines(c(headerlines, targetslines), outfile, ...)
-  if(silent!=TRUE) cat("\t", "Modified", infile, "file with sample-wise reference has been written to outfile", outfile, "\n") 
+  if(silent!=TRUE) cat("\t", "Modified", infile, "file with sample-wise reference has been written to outfile", outfile, "\n")
 }
 ## Usage:
 # writeTargetsRef(infile="~/targets.txt", outfile="~/targets_refsample.txt", silent=FALSE, overwrite=FALSE)
@@ -131,8 +134,8 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
 countRangeset <- function(bfl, args, format="tabular", ...) {
-  ## global functions or variables
-  import.bed <- summarizeOverlaps <- NULL
+  pkg <- c("GenomeInfoDb")
+  checkPkg(pkg, quietly = FALSE)
   ## Input validity checks
   if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
   if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
@@ -151,14 +154,14 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
       df <- read.delim(infile1(args)[i],comment.char = "#")
       peaks <- as(df, "GRanges")
     } else if(format=="bed") {
-      peaks <- import.bed(infile1(args)[i])
+      peaks <- rtracklayer::import.bed(infile1(args)[i])
     } else {
       stop("Input file format not supported.")
     }
-    names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
+    names(peaks) <- paste0(as.character(GenomeInfoDb::seqnames(peaks)), "_", start(peaks), "-", end(peaks))
     peaks <- split(peaks, names(peaks))
-    countDF <- summarizeOverlaps(peaks, bfl, ...)
-    countDF <- assays(countDF)$counts
+    countDF <- GenomicAlignments::summarizeOverlaps(peaks, bfl, ...)
+    countDF <- SummarizedExperiment::assays(countDF)$counts
     write.table(countDF, countDFnames[i], col.names=NA, quote=FALSE, sep="\t")
     cat("Wrote count result", i, "to", basename(countDFnames[i]), "\n")
   }
@@ -191,9 +194,9 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
     countDF <- read.delim(countfiles[i], row.names=1)
     edgeDF <- diffFct(countDF=countDF, targets, cmp, ...)
     write.table(edgeDF, dbrDFnames[i], quote=FALSE, sep="\t", col.names = NA)
-    pdf(paste0(dbrDFnames[i], ".pdf"))
+    grDevices::pdf(paste0(dbrDFnames[i], ".pdf"))
     DBR_list <- filterDEGs(degDF=edgeDF, filter=dbrfilter)
-    dev.off()
+    grDevices::dev.off()
     dbrlists <- c(dbrlists, list(DBR_list))
     names(dbrlists)[i] <- names(dbrDFnames[i]) 
     cat("Wrote count result", i, "to", basename(dbrDFnames[i]), "\n")
@@ -210,18 +213,18 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
 ###########################################################
 ##  Identify Range Overlaps 
 olRanges <- function(query, subject, output="gr") {
-  ## global functions or variables
-  seqlengths <- elementMetadata <- NULL
+  pkg <- c("IRanges", "GenomeInfoDb")
+  checkPkg(pkg, quietly = FALSE)
   ## Input check
   if(!((class(query)=="GRanges" & class(subject)=="GRanges") | (class(query)=="IRanges" & class(subject)=="IRanges"))) {
     stop("Query and subject need to be of same class, either GRanges or IRanges!")
   }
   ## Find overlapping ranges
   if(class(query)=="GRanges") {
-    seqlengths(query) <- rep(NA, length(seqlengths(query)))
-    seqlengths(subject) <- rep(NA, length(seqlengths(subject)))
+    GenomeInfoDb::seqlengths(query) <- rep(NA, length(GenomeInfoDb::seqlengths(query)))
+    GenomeInfoDb::seqlengths(subject) <- rep(NA, length(GenomeInfoDb::seqlengths(subject)))
   }
-  olindex <- as.matrix(findOverlaps(query, subject))
+  olindex <- as.matrix(GenomicRanges::findOverlaps(query, subject))
   query <- query[olindex[,1]]
   subject <- subject[olindex[,2]]
   olma <- cbind(Qstart=start(query), Qend=end(query), Sstart=start(subject), Send=end(subject))
@@ -259,17 +262,17 @@ olRanges <- function(query, subject, output="gr") {
   ## Output type
   oldf <- data.frame(Qindex=olindex[,1], Sindex=olindex[,2], olma, OLstart, OLend, OLlength, OLpercQ, OLpercS, OLtype)
   if(class(query) == "GRanges") {
-    oldf <- cbind(space=as.character(seqnames(query)), oldf)
+    oldf <- cbind(space=as.character(GenomeInfoDb::seqnames(query)), oldf)
   }
   if(output=="df") {
     return(oldf)
   }
   if(output=="gr") {
     if(class(query)=="GRanges") {
-      elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
+      S4Vectors::elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
     }
     if(class(query)=="IRanges") {
-      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
+      query <- GRanges(seqnames = S4Vectors::Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = S4Vectors::Rle(BiocGenerics::strand(rep("+", length(query)))), oldf)
     }
     return(query)
   }
@@ -277,9 +280,9 @@ olRanges <- function(query, subject, output="gr") {
 
 ## Run olRanges function
 ## Sample Data Sets
-# grq <- GRanges(seqnames = Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)), 
-#                ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)), 
-#                strand = Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
+# grq <- GRanges(seqnames = S4Vectors::Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)),
+#                ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)),
+#                strand = S4Vectors::Rle(BiocGenerics::strand(c("-", "+", "-")), c(1, 7, 2)))
 # grs <- shift(grq[c(2,5,6)], 5)
-# olRanges(query=grq, subject=grs, output="df") 
-# olRanges(query=grq, subject=grs, output="gr") 
+# olRanges(query=grq, subject=grs, output="df")
+# olRanges(query=grq, subject=grs, output="gr")
