@@ -1,3 +1,5 @@
 ^_pkgdown\.yml$
-^inst\/extdata\/\.batchtools\.conf\.R$
- ^\.github
+^\.github
+^.*\.Rproj$
+^\.Rproj\.user$
+test_devel

@@ -16,14 +16,14 @@ any existing files. If a file exists then the user has to explicitly
 remove it or set \code{overwrite=TRUE}. 
 }
 \usage{
-writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, ...)
+writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, remove=FALSE, ...)
 }
 \arguments{
   \item{x}{
 Object of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{file}{
-Name and path of the output file. If set to "default" then the name of the output file will have the pattern 'targets_<software>.txt', where <software> will be what \code{software(x)} returns, when \code{x} is an object of class \code{SYSargs}. For an object of class \code{SYSargs2}, the output file will have the pattern 'targets_<software>_<step>.txt', where <software> will be the workflow name (\code{cwlfiles(x)$cwl}) and <step> will be the step chosen in the argument \code{step}.
+Name and path of the output file. If set to "default" then the name of the output file will have the pattern 'targets_<software>.txt', where <software> will be what \code{software(x)} returns, when \code{x} is an object of class \code{SYSargs}. For an object of class \code{SYSargs2}, the output file will have the pattern 'targets_<software>_<step>.txt', where <software> will be the workflow name (\code{files(x)$cwl}) and <step> will be the step chosen in the argument \code{step}.
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
@@ -39,6 +39,9 @@ A vector of character strings of the new column name to add to target file.
 }
   \item{new_col_output_index}{
 A vector of numeric index positions of the file in \code{SYSargs2} class \code{output}. It requires \code{new_col} definition.
+}
+  \item{remove}{
+To remove the original columns. Default is \code{FALSE}. 
 }
   \item{\dots}{
 To pass on additional arguments.
@@ -73,16 +76,14 @@ writeTargetsout(x=args, file="default")
 ##########################################
 ## Construct SYSargs2 object 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
-                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
-
-\dontrun{
 ## Write targets out file
 names(WF$clt)
 writeTargetsout(x=WF, file="default", step=1, new_col=c("sam_file"), new_col_output_index=c(1))
-}
+
 }
 \keyword{ utilities }

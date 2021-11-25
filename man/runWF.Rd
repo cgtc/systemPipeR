@@ -7,22 +7,54 @@ Execute SYSargsList
 Function to execute all the code list specified in SYSargsList object.
 }
 \usage{
-runWF(sysargslist, steps = "ALL")
+runWF(sysargs, steps = NULL, targets = NULL,
+                  force = FALSE, saveEnv = TRUE,
+                  run_step = "ALL", ignore.dep = FALSE,
+                  warning.stop = FALSE, error.stop = TRUE, silent = FALSE, ...)
 }
 \arguments{
-  \item{sysargslist}{
-  object of class SYSargsList.
+  \item{sysargs}{
+    object of class \code{SYSargsList}.
 }
   \item{steps}{
-  	a character vector of all steps desires to preserve on the output file. 
-  	Default is \code{"ALL"}. It can be used the symbol ":" to select many steps in sequence, 
-  	for example, input_steps=1:5.2, from step 1 to step 5.2. The symbol "." represents 
-  	the substeps and symbol "," is used to separate selections. Jump from a 
-  	major step to sub-step is supported, but if a major step is selected, all sub-steps
-  	of this major step will be selected. Repeatedly selected steps will only result 
-  	in a unique step. It is recommended to put major steps in input_steps, like 1:4, 6:8, 10; 
-  	and unwanted sub-steps in exclude_step, like 1.1, 3.1.1-3.1.3, 6.5. Reverse selecting 
-  	is supported e.g. 10:1.
+    character or numeric. Step name or index. If \code{NULL}, all the steps
+    will be executed.
+}
+  \item{targets}{
+    This option allows selecting which targets file and, by consequence which 
+    command line will be executed for each \code{SYSargs2} class step.
+    Default is \code{NULL}, in which all command lines will be executed.
+    
+}
+  \item{force}{
+    Internally, the option checks if the expected \code{output} files exist, 
+    and it skips the command lines when the respective files exist. 
+    If the argument \code{force} is set to \code{TRUE}, the command line will 
+    be executed and the files overwrite. Default is \code{force=FALSE}. 
+}
+  \item{saveEnv}{
+    If set to \code{TRUE}, the environment will be saved to an RDS file. 
+    To check the RDS file location, please use 
+    \code{projectInfo(sysargs)[["envir"]]}.
+}
+  \item{run_step}{
+    character. If the step has "mandatory" or "optional" flag for the execution.
+    When \code{ALL}, all the steps will be executed. 
+}
+  \item{ignore.dep}{
+    logical. This option allow to igonore the dependency tree, when \code{TRUE}.
+}
+  \item{warning.stop}{
+    If set to \code{TRUE}, the process will be interrupted when a warning is detected.
+}
+  \item{error.stop}{
+    If set to \code{TRUE}, the process will be interrupted when a error is detected.
+}
+  \item{silent}{
+    If set to \code{TRUE}, all messages returned by the function will be suppressed.
+}
+  \item{\dots}{
+    Additional arguments to pass on from \code{runCommandline()}.
 }
 }
 \value{
@@ -35,17 +67,23 @@ Daniela Cassol and Thomas Girke
 See also as \code{SYSargsList-class}.
 }
 \examples{
-\dontrun{
 ## Construct SYSargsList object from Rmd file
-library(systemPipeRdata)
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- tempdir()
-SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
-sysargslist <- initWF(sysconfig ="SYSconfig.yml")
-sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
-sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
-sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
+sal <- SPRproject(overwrite=TRUE)
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+
+## Constructor and `appendStep<-`
+appendStep(sal) <- SYSargsList(step_name = "echo", 
+                               targets=targetspath, dir=TRUE,
+                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+appendStep(sal) <- LineWise(code = {
+                            hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
+                            }, 
+                            step_name = "R_read", 
+                            dependency = "echo")
+\dontrun{
+sal <- runWF(sal)
 }
 }
 \keyword{ utilities }
